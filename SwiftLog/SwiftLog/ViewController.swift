@@ -14,21 +14,27 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        设置默认打印Log的等级
-        SLog.defaultLogDegree = .debug
+        SLog.defaultLogDegree = .ignore
         /// 用于网络日志的开关
         SLog.showNetLog = false
 
+        SLog.ignore("ignore")
         SLogIgnore("打印最低级信息可忽视不理会")
         
+        SLog.debug("debug")
         SLogDebug("打印Debug级信息")
         
+        SLog.net("netWork")
         SLogNet("可单独关闭----\\u6253\\u5370\\u6d88\\u606f print message，可以用于打印类似网络请求报文")
         
         //支持打印时unicode转中文
+        SLog.info("info")
         SLogInfo("打印Info级信息")
         
+        SLog.warn("warning")
         SLogWarn("打印警告级信息")
         
+        SLog.error("error")
         SLogError("打印Error信息")
     }
 

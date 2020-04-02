@@ -1,8 +1,8 @@
-lane :SwiftLog do |options|
+lane :SwiftLogger do |options|
 
   target_version = options[:tag]
  
-  target_project = "SwiftLog"
+  target_project = "SwiftLogger"
   spec_path = "#{target_project}.podspec"
   # git pull
   git_pull 
