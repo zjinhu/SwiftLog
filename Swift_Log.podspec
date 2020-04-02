@@ -1,6 +1,6 @@
 
 Pod::Spec.new do |s|
-  s.name             = 'SwiftLogger'
+  s.name             = 'Swift_Log'
   s.version          = '0.1.0'
   s.summary          = '路由.'
  
