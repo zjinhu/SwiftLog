@@ -3,7 +3,7 @@ Swift 日志分级打印工具，支持分不同等级打印log，添加专门�
 ## 安装
 ```
 支持ios9以上版本，swift4以上版本都支持
-pod ‘SwiftLog’
+pod ‘Swift_Log’
 ```
 ## 使用 
 
@@ -25,7 +25,7 @@ public enum LogDegree : Int{
 // 用于网络日志的开关
         SLog.showNetLog = false
 ```
-
+输出日志
 ```
         SLogIgnore("打印最低级信息可忽视不理会")
         
@@ -40,6 +40,19 @@ public enum LogDegree : Int{
         
         SLogError("打印Error信息")
 ```
-
+也可以使用这种方法打印
+```
+       SLog.ignore("ignore")
+        
+       SLog.debug("debug")
+        
+       SLog.net("netWork")
+       
+       SLog.info("info")
+        
+       SLog.warn("warning")
+        
+       SLog.error("error")
+```
 
 详细用法参见Demo **ViewController**
