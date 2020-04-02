@@ -14,9 +14,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        设置默认打印Log的等级
-        SLog.defaultLogDegree = .ignore
+        SLog.defaultLogDegree = .net
         /// 用于网络日志的开关
-        SLog.showNetLog = false
+        SLog.showNetLog = true
 
         SLog.ignore("ignore")
         SLogIgnore("打印最低级信息可忽视不理会")

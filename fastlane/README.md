@@ -15,9 +15,9 @@ Install _fastlane_ using
 or alternatively using `brew cask install fastlane`
 
 # Available Actions
-### SwiftLogger
+### Swift_Log
 ```
-fastlane SwiftLogger
+fastlane Swift_Log
 ```
 
 
