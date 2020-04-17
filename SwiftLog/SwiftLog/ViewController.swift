@@ -17,7 +17,8 @@ class ViewController: UIViewController {
         SLog.defaultLogDegree = .net
         /// 用于网络日志的开关
         SLog.showNetLog = true
-
+        SLog.addFileLog = true
+        
         SLog.verbose("ignore")
         SLogVerbose("打印最低级信息可忽视不理会")
         
@@ -36,6 +37,8 @@ class ViewController: UIViewController {
         
         SLog.error("error")
         SLogError("打印Error信息")
+        
+        SLog.error(SLog.getLogFileURL.absoluteString)
     }
 
 

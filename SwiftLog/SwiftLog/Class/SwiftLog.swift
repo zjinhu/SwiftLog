@@ -8,6 +8,12 @@
 
 import Foundation
 
+private let kCacheDomainName = "SLog.txt"
+
+private let cachePath = FileManager.default.urls(for: .cachesDirectory,
+                                          in: .userDomainMask)[0]
+private let logFileURL = cachePath.appendingPathComponent(kCacheDomainName)
+
 #if DEBUG
 private let shouldLog: Bool = true
 #else
@@ -75,11 +81,19 @@ public enum LogDegree : Int{
 /// 日志处理
 public class SLog {
     
+    /// 获取日志日志
+    public static var getLogFileURL: URL{
+        return logFileURL
+    }
+    
     /// 日志打印级别，小于此级别忽略
     public static var defaultLogDegree : LogDegree = .verbose
     
     /// 用于开关网络日志打印
     public static var showNetLog : Bool = true
+    
+    /// log是否写入文件
+    public static var addFileLog : Bool = false
     
     /// log等级划分最低级 ⚪ 可忽略
     public static func verbose(_ message: String,
@@ -142,14 +156,14 @@ public class SLog {
                            file: StaticString,
                            function: StaticString,
                            line: UInt) {
-        guard shouldLog else { return }
+        
         if type.rawValue < defaultLogDegree.rawValue{ return }
         
         if type == .net, !showNetLog{ return }
         
         let fileName = String(describing: file).lastPathComponent
         let formattedMsg = String(format: "所在类:%@ \n 方法名:%@ \n 所在行:%d \n<<<<<<<<<<<<<<<<信息>>>>>>>>>>>>>>>>\n\n %@ \n\n<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>\n\n", fileName, String(describing: function), line, message())
-        SLogFormatter.log(message: formattedMsg, type: type)
+        SLogFormatter.log(message: formattedMsg, type: type, addFileLog : addFileLog)
     }
     
 }
@@ -159,7 +173,7 @@ class SLogFormatter {
 
     static var dateFormatter = DateFormatter()
 
-    static func log(message logMessage: String, type: LogDegree) {
+    static func log(message logMessage: String, type: LogDegree, addFileLog : Bool) {
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss:SSS"
         var logLevelStr: String
         switch type {
@@ -179,7 +193,35 @@ class SLogFormatter {
         
         let dateStr = dateFormatter.string(from: Date())
         let finalMessage = String(format: "\n%@ | %@ \n %@", logLevelStr, dateStr, logMessage)
+        
+        
+        //将内容同步写到文件中去（Caches文件夹下）
+        if addFileLog {
+            appendText(fileURL: logFileURL, string: "\(finalMessage.replaceUnicode)")
+        }
+        
+        guard shouldLog else { return }
         print(finalMessage.replaceUnicode)
+    }
+    
+    //在文件末尾追加新内容
+    static func appendText(fileURL: URL, string: String) {
+        do {
+            //如果文件不存在则新建一个
+            if !FileManager.default.fileExists(atPath: fileURL.path) {
+                FileManager.default.createFile(atPath: fileURL.path, contents: nil)
+            }
+             
+            let fileHandle = try FileHandle(forWritingTo: fileURL)
+            let stringToWrite = "\n" + string
+             
+            //找到末尾位置并添加
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(stringToWrite.data(using: String.Encoding.utf8)!)
+             
+        } catch let error as NSError {
+            print("failed to append: \(error)")
+        }
     }
 }
 
@@ -209,7 +251,7 @@ private extension String {
         do {
             returnStr = try PropertyListSerialization.propertyList(from: tempData, options: [.mutableContainers], format: nil) as! String
         } catch {
-            debugPrint(error)
+            print(error)
         }
         return returnStr.replacingOccurrences(of: "\\r\\n", with: "\n")
     }
