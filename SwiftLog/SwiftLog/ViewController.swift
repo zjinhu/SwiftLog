@@ -18,8 +18,8 @@ class ViewController: UIViewController {
         /// 用于网络日志的开关
         SLog.showNetLog = true
 
-        SLog.ignore("ignore")
-        SLogIgnore("打印最低级信息可忽视不理会")
+        SLog.verbose("ignore")
+        SLogVerbose("打印最低级信息可忽视不理会")
         
         SLog.debug("debug")
         SLogDebug("打印Debug级信息")

@@ -55,16 +55,16 @@ private let shouldLog: Bool = false
 }
  
 /// log等级划分最低级 ⚪ 可忽略
-@inlinable public func SLogIgnore(_ message: @autoclosure () -> String,
+@inlinable public func SLogVerbose(_ message: @autoclosure () -> String,
                          file: StaticString = #file,
                          function: StaticString = #function,
                          line: UInt = #line) {
-    SLog.log(message(), type: .ignore, file: file, function: function, line: line)
+    SLog.log(message(), type: .verbose, file: file, function: function, line: line)
 }
 
 /// log等级
 public enum LogDegree : Int{
-    case ignore = 0//最低级log
+    case verbose = 0//最低级log
     case debug = 1//debug级别
     case net = 2//用于打印网络报文，可单独关闭
     case info = 3//重要信息级别,比如网络层输出
@@ -76,17 +76,17 @@ public enum LogDegree : Int{
 public class SLog {
     
     /// 日志打印级别，小于此级别忽略
-    public static var defaultLogDegree : LogDegree = .ignore
+    public static var defaultLogDegree : LogDegree = .verbose
     
     /// 用于开关网络日志打印
     public static var showNetLog : Bool = true
     
     /// log等级划分最低级 ⚪ 可忽略
-    public static func ignore(_ message: String,
+    public static func verbose(_ message: String,
                              file: StaticString = #file,
                              function: StaticString = #function,
                              line: UInt = #line) {
-        log(message, type: .ignore, file: file, function: function, line: line)
+        log(message, type: .verbose, file: file, function: function, line: line)
     }
     
     /// log等级划分开发级 ✅
@@ -173,7 +173,7 @@ class SLogFormatter {
             logLevelStr = "🌐 Network 🌐"
         case .debug:
             logLevelStr = "✅ Debug ✅"
-        case .ignore:
+        case .verbose:
             logLevelStr = "⚪ Ignore ⚪"
         }
         
