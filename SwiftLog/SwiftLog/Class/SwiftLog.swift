@@ -104,13 +104,17 @@ public class SLog {
     }
  
     private static func deleteOldFiles() {
+        let url = getLogFileURL
+        if !FileManager.default.fileExists(atPath: url.path) {
+            return
+        }
         guard let age : TimeInterval = maxLogAge, age != 0 else {
             return
         }
         let expirationDate = Date(timeIntervalSinceNow: -age)
         let resourceKeys: [URLResourceKey] = [.isDirectoryKey, .contentModificationDateKey, .totalFileAllocatedSizeKey]
         var resourceValues: URLResourceValues
-        let url = getLogFileURL
+        
         do {
             resourceValues = try url.resourceValues(forKeys: Set(resourceKeys))
             if let modifucationDate = resourceValues.contentModificationDate {
