@@ -1,5 +1,5 @@
 # SwiftLog
-Swift 日志分级打印工具，支持分不同等级打印log，添加专门用于打印网络请求报文的类型unicode转码，方便查看日志输出。用法详见Demo。
+Swift 日志分级打印工具，支持分不同等级打印log，添加专门用于打印网络请求报文的类型unicode转码，方便查看日志输出。支持打印日志到文件，提供文件路径方便上传日志文件，支持文件LRU淘汰，默认七天淘汰一次。用法详见Demo。
 ## 安装
 ```
 支持ios9以上版本，swift4以上版本都支持
@@ -21,9 +21,11 @@ public enum LogDegree : Int{
 
 ```
 // 设置默认打印Log的等级。低于此等级不做输出
-        SLog.defaultLogDegree = .debug
+    SLog.defaultLogDegree = .debug
 // 用于网络日志的开关
-        SLog.showNetLog = false
+    SLog.showNetLog = false
+//缓存日志保存最长时间///如果需要自定义时间一定要在addFileLog之前  默认七天
+    SLog.maxLogAge = 60 * 60 * 24 * 7
 // 打印日志到文件中
     SLog.addFileLog = true
 //获取文件地址URL
