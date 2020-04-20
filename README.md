@@ -24,10 +24,14 @@ public enum LogDegree : Int{
         SLog.defaultLogDegree = .debug
 // 用于网络日志的开关
         SLog.showNetLog = false
+// 打印日志到文件中
+    SLog.addFileLog = true
+//获取文件地址URL
+    SLog.getLogFileURL
 ```
 输出日志
 ```
-        SLogIgnore("打印最低级信息可忽视不理会")
+        SLogVerbose("打印最低级信息可忽视不理会")
         
         SLogDebug("打印Debug级信息")
         
@@ -42,7 +46,7 @@ public enum LogDegree : Int{
 ```
 也可以使用这种方法打印
 ```
-       SLog.ignore("ignore")
+       SLog.verbose("ignore")
         
        SLog.debug("debug")
         
