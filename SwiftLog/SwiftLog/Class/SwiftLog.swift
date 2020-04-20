@@ -92,8 +92,37 @@ public class SLog {
     /// 用于开关网络日志打印
     public static var showNetLog : Bool = true
     
+    ///缓存保存最长时间///如果需要自定义时间一定要在addFileLog之前
+    public static var maxLogAge : TimeInterval? = 60 * 60 * 24 * 7
     /// log是否写入文件
-    public static var addFileLog : Bool = false
+    public static var addFileLog : Bool = false{
+        didSet{
+            if addFileLog {
+                deleteOldFiles()
+            }
+        }
+    }
+ 
+    private static func deleteOldFiles() {
+        guard let age : TimeInterval = maxLogAge, age != 0 else {
+            return
+        }
+        let expirationDate = Date(timeIntervalSinceNow: -age)
+        let resourceKeys: [URLResourceKey] = [.isDirectoryKey, .contentModificationDateKey, .totalFileAllocatedSizeKey]
+        var resourceValues: URLResourceValues
+        let url = getLogFileURL
+        do {
+            resourceValues = try url.resourceValues(forKeys: Set(resourceKeys))
+            if let modifucationDate = resourceValues.contentModificationDate {
+                if modifucationDate.compare(expirationDate) == .orderedAscending {
+                    try? FileManager.default.removeItem(at: url)
+                }
+            }
+        } catch let error {
+            debugPrint("SLog error: \(error.localizedDescription)")
+        }
+        
+    }
     
     /// log等级划分最低级 ⚪ 可忽略
     public static func verbose(_ message: String,
@@ -256,3 +285,5 @@ private extension String {
         return returnStr.replacingOccurrences(of: "\\r\\n", with: "\n")
     }
 }
+
+ 

@@ -17,6 +17,7 @@ class ViewController: UIViewController {
         SLog.defaultLogDegree = .net
         /// 用于网络日志的开关
         SLog.showNetLog = true
+//        SLog.maxLogAge = 10
         SLog.addFileLog = true
         
         SLog.verbose("ignore")
