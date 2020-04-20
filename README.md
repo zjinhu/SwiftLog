@@ -10,7 +10,7 @@ pod ‘Swift_Log’
 ```
 /// log等级
 public enum LogDegree : Int{
-    case ignore = 0//最低级log
+    case verbose = 0//最低级log
     case debug = 1//debug级别
     case netWork = 2//用于打印网络报文，可单独关闭
     case info = 3//重要信息级别
