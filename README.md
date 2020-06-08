@@ -9,6 +9,13 @@ Swift 日志分级打印工具，支持分不同等级打印log，添加专门�
 pod ‘Swift_Log’
 ```
 ## 使用 
+在 代码中 
+
+```
+
+public typealias log = SLog
+
+```
 
 ```
 /// log等级
