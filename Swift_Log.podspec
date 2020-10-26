@@ -19,5 +19,5 @@ Pod::Spec.new do |s|
 
   s.frameworks   =  "Foundation" #支持的框架
 
-  s.source_files = 'SwiftLog/SwiftLog/Class/**/*' 
+  s.source_files = 'Sources/**/*' 
 end
