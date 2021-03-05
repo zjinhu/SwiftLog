@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        设置默认打印Log的等级
-        log.defaultLogDegree = .net
+        log.defaultLogDegree = .verbose
         /// 用于网络日志的开关
         log.showNetLog = true
 //        SLog.maxLogAge = 10

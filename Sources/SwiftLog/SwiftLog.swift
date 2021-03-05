@@ -221,7 +221,7 @@ class SLogFormatter {
         case .debug:
             logLevelStr = "✅ Debug ✅"
         case .verbose:
-            logLevelStr = "⚪ Ignore ⚪"
+            logLevelStr = "⚪ Verbose ⚪"
         }
         
         let dateStr = dateFormatter.string(from: Date())
