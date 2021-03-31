@@ -4,9 +4,10 @@
 
 [![Version](https://img.shields.io/cocoapods/v/Swift_Log.svg?style=flat)](http://cocoapods.org/pods/Swift_Log)
 [![SPM](https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat)](https://swift.org/package-manager/)
-![Xcode 11.0+](https://img.shields.io/badge/Xcode-11.0%2B-blue.svg)
-![iOS 11.0+](https://img.shields.io/badge/iOS-11.0%2B-blue.svg)
-![Swift 5.0+](https://img.shields.io/badge/Swift-5.0%2B-orange.svg)
+![Xcode 9.0+](https://img.shields.io/badge/Xcode-9.0%2B-blue.svg)
+![iOS 9.0+](https://img.shields.io/badge/iOS-9.0%2B-blue.svg)
+![Swift 4.0+](https://img.shields.io/badge/Swift-4.0%2B-orange.svg)
+[![Swift 5.0](https://img.shields.io/badge/Swift-5.0-green.svg?style=flat)](https://developer.apple.com/swift/)
 
 Swift 日志分级打印工具。
 
