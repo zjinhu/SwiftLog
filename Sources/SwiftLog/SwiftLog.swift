@@ -19,7 +19,15 @@ private let shouldLog: Bool = true
 #else
 private let shouldLog: Bool = false
 #endif
- 
+
+/// log等级划分最高级 ‼️
+@inlinable public func SLogFault(_ message: @autoclosure () -> String,
+                       file: StaticString = #file,
+                       function: StaticString = #function,
+                       line: UInt = #line) {
+    SLog.log(message(), type: .fault, file: file, function: function, line: line)
+}
+
 /// log等级划分最高级 ❌
 @inlinable public func SLogError(_ message: @autoclosure () -> String,
                        file: StaticString = #file,
@@ -29,11 +37,11 @@ private let shouldLog: Bool = false
 }
 
 /// log等级划分警告级 ⚠️
-@inlinable public func SLogWarn(_ message: @autoclosure () -> String,
+@inlinable public func SLogWarning(_ message: @autoclosure () -> String,
                       file: StaticString = #file,
                       function: StaticString = #function,
                       line: UInt = #line) {
-    SLog.log(message(), type: .warn, file: file, function: function, line: line)
+    SLog.log(message(), type: .warning, file: file, function: function, line: line)
 }
 
 /// log等级划分信息级 🔔
@@ -61,21 +69,22 @@ private let shouldLog: Bool = false
 }
  
 /// log等级划分最低级 ⚪ 可忽略
-@inlinable public func SLogVerbose(_ message: @autoclosure () -> String,
+@inlinable public func SLogTrace(_ message: @autoclosure () -> String,
                          file: StaticString = #file,
                          function: StaticString = #function,
                          line: UInt = #line) {
-    SLog.log(message(), type: .verbose, file: file, function: function, line: line)
+    SLog.log(message(), type: .trace, file: file, function: function, line: line)
 }
 
 /// log等级
 public enum LogDegree : Int{
-    case verbose = 0//最低级log
-    case debug = 1//debug级别
+    case trace = 0//跟踪程序的执行
+    case debug = 1//调试程序
     case net = 2//用于打印网络报文，可单独关闭
     case info = 3//重要信息级别,比如网络层输出
-    case warn = 4//警告级别
+    case warning = 4//警告级别
     case error = 5//错误级别
+    case fault = 6//严重错误
 }
 
 /// 日志处理
@@ -129,11 +138,11 @@ public class SLog {
     }
     
     /// log等级划分最低级 ⚪ 可忽略
-    public static func verbose(_ message: String,
+    public static func trace(_ message: String,
                              file: StaticString = #file,
                              function: StaticString = #function,
                              line: UInt = #line) {
-        log(message, type: .verbose, file: file, function: function, line: line)
+        log(message, type: .trace, file: file, function: function, line: line)
     }
     
     /// log等级划分开发级 ✅
@@ -161,21 +170,27 @@ public class SLog {
     }
     
     /// log等级划分警告级 ⚠️
-    public static func warn(_ message: String,
+    public static func warning(_ message: String,
                              file: StaticString = #file,
                              function: StaticString = #function,
                              line: UInt = #line) {
-        log(message, type: .warn, file: file, function: function, line: line)
+        log(message, type: .warning, file: file, function: function, line: line)
     }
     
-    /// log等级划分最高级 ❌
+    /// log等级划分高级 ❌
     public static func error(_ message: String,
                              file: StaticString = #file,
                              function: StaticString = #function,
                              line: UInt = #line) {
         log(message, type: .error, file: file, function: function, line: line)
     }
-    
+  /// log等级划分最高级 ‼️
+    public static func fault(_ message: String,
+                             file: StaticString = #file,
+                             function: StaticString = #function,
+                             line: UInt = #line) {
+        log(message, type: .fault, file: file, function: function, line: line)
+    }
     
     /// 打印Log
     /// - Parameters:
@@ -195,7 +210,9 @@ public class SLog {
         if type == .net, !showNetLog{ return }
         
         let fileName = String(describing: file).lastPathComponent
+      
         let formattedMsg = String(format: "所在类:%@ \n 方法名:%@ \n 所在行:%d \n<<<<<<<<<<<<<<<<信息>>>>>>>>>>>>>>>>\n\n %@ \n\n<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>\n\n", fileName, String(describing: function), line, message())
+        
         SLogFormatter.log(message: formattedMsg, type: type, addFileLog : addFileLog)
     }
     
@@ -205,28 +222,39 @@ public class SLog {
 class SLogFormatter {
 
     static var dateFormatter = DateFormatter()
-
+  
+    static let log = OSLog(subsystem: Bundle.main.bundleIdentifier!, category: "SLog")
+  
     static func log(message logMessage: String, type: LogDegree, addFileLog : Bool) {
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss:SSS"
         var logLevelStr: String
+        var level: OSLogType
         switch type {
+        case .fault:
+            level = .fault
+            logLevelStr = "‼️ Fault ‼️"
         case .error:
+            level = .error
             logLevelStr = "❌ Error ❌"
-        case .warn:
+        case .warning:
+            level = .error
             logLevelStr = "⚠️ Warning ⚠️"
         case .info:
+            level = .info
             logLevelStr = "🔔 Info 🔔"
         case .net:
+            level = .info
             logLevelStr = "🌐 Network 🌐"
         case .debug:
+            level = .debug
             logLevelStr = "✅ Debug ✅"
-        case .verbose:
-            logLevelStr = "⚪ Verbose ⚪"
+        case .trace:
+            level = .`default`
+            logLevelStr = "⚪ Trace ⚪"
         }
         
         let dateStr = dateFormatter.string(from: Date())
         let finalMessage = String(format: "\n%@ | %@ \n %@", logLevelStr, dateStr, logMessage)
-        
         
         //将内容同步写到文件中去（Caches文件夹下）
         if addFileLog {
@@ -234,7 +262,9 @@ class SLogFormatter {
         }
         
         guard shouldLog else { return }
-        print(finalMessage.replaceUnicode)
+        // print(finalMessage.replaceUnicode)
+
+        os_log("%{public}@", log: log, type: level, finalMessage.replaceUnicode)
     }
     
     //在文件末尾追加新内容
