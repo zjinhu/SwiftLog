@@ -1,7 +1,5 @@
 ![](Image/logo.png)
 
-
-
 [![Version](https://img.shields.io/cocoapods/v/Swift_Log.svg?style=flat)](http://cocoapods.org/pods/Swift_Log)
 [![SPM](https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat)](https://swift.org/package-manager/)
 ![Xcode 9.0+](https://img.shields.io/badge/Xcode-9.0%2B-blue.svg)
@@ -9,97 +7,89 @@
 ![Swift 4.0+](https://img.shields.io/badge/Swift-4.0%2B-orange.svg)
 [![Swift 5.0](https://img.shields.io/badge/Swift-5.0-green.svg?style=flat)](https://developer.apple.com/swift/)
 
-Swift 日志分级打印工具。
+A lightweight, level-based logging utility for Swift with bilingual (Chinese/English) documentation.
 
-支持分不同等级打印log，添加不同emoji方便查阅对应等级，可以设置输出级别，低于该级别的日志不进行打印。
+Supports multiple log levels with emoji indicators, configurable output levels, Unicode decoding for network payloads, and optional file logging with automatic LRU expiration (default: 7 days).
 
-添加专门用于打印网络请求报文的类型unicode转码，方便查看中文日志输出。
+## Installation
 
-支持打印日志到文件，提供文件路径方便上传日志文件，支持文件LRU淘汰，默认七天淘汰一次。用法详见Demo。
+### CocoaPods
 
-尝试了xs max下异步并发的方式写入100条4000字的日志大概需要170毫秒，不写文件仅仅Xcode的日志输出需要150毫秒。FileManager是线程安全的可以放心使用。
-
-## 安装
-
-### cocoapods
-
-1.在 Podfile 中添加 `pod ‘Swift_Log’`
-
-2.执行 `pod install 或 pod update`
-
-3.导入 `import Swift_Log`
+1. Add `pod 'Swift_Log'` to your Podfile
+2. Run `pod install` or `pod update`
+3. Import with `import Swift_Log`
 
 ### Swift Package Manager
 
-从 Xcode 11 开始，集成了 Swift Package Manager，使用起来非常方便。SwiftLog 也支持通过 Swift Package Manager 集成。
+SwiftLog supports SPM. In Xcode: `File > Swift Packages > Add Package Dependency`, then enter:
 
-在 Xcode 的菜单栏中选择 `File > Swift Packages > Add Pacakage Dependency`，然后在搜索栏输入
+`https://github.com/zjinhu/SwiftLog`
 
-`https://github.com/jackiehu/SwiftLog`，即可完成集成
+### Manual Integration
 
-### 手动集成
+Drag the `Sources/SwiftLog` folder into your project.
 
-SwiftLog 也支持手动集成，只需把Sources文件夹中的SwiftLog文件夹拖进需要集成的项目即可
+## Usage
 
-
-
-## 使用 
+### Log Levels
 
 ```swift
-/// log等级
-public enum LogDegree : Int{
-    case verbose = 0//最低级log
-    case debug = 1//debug级别
-    case netWork = 2//用于打印网络报文，可单独关闭
-    case info = 3//重要信息级别
-    case warning = 4//警告级别
-    case error = 5//错误级别
+public enum LogDegree: Int {
+    case trace = 0   // Trace: Track program execution
+    case debug = 1   // Debug: Debugging information
+    case net = 2     // Network: Network requests/responses (toggle independently)
+    case info = 3    // Info: Important information
+    case warning = 4 // Warning: Warning messages
+    case error = 5   // Error: Error messages
+    case fault = 6   // Fault: Critical/fatal errors
 }
 ```
 
-```swift
-// 设置默认打印Log的等级。低于此等级不做输出
-    SLog.defaultLogDegree = .debug
-// 用于网络日志的开关
-    SLog.showNetLog = false
-//缓存日志保存最长时间///如果需要自定义时间一定要在addFileLog之前  默认七天
-    SLog.maxLogAge = 60 * 60 * 24 * 7
-// 打印日志到文件中
-    SLog.addFileLog = true
-//获取文件地址URL
-    SLog.getLogFileURL
-```
-输出日志
-```swift
-        SLogVerbose("打印最低级信息可忽视不理会")
-        
-        SLogDebug("打印Debug级信息")
-       
-        //支持打印时unicode转中文
-        SLogNet("可单独关闭----\\u6253\\u5370\\u6d88\\u606f print message，可以用于打印类似网络请求报文")
+### Configuration
 
-        SLogInfo("打印Info级信息")
-        
-        SLogWarn("打印警告级信息")
-        
-        SLogError("打印Error信息")
-```
-也可以使用这种方法打印
 ```swift
-       SLog.verbose("ignore")
-        
-       SLog.debug("debug")
-        
-       SLog.net("netWork")
-       
-       SLog.info("info")
-        
-       SLog.warn("warning")
-        
-       SLog.error("error")
+// Set minimum log level (logs below this are ignored)
+SLog.defaultLogDegree = .debug
+
+// Toggle network logs independently
+SLog.showNetLog = false
+
+// Set max log file age (in seconds), must be set before enabling addFileLog
+// Default: 7 days
+SLog.maxLogAge = 60 * 60 * 24 * 7
+
+// Enable file logging
+SLog.addFileLog = true
+
+// Get log file URL for upload/sharing
+SLog.getLogFileURL
 ```
 
-打印输出样式，防止其他输出干扰
+### Global Functions (Recommended)
+
+```swift
+SLogTrace("Trace level - ignorable details")
+SLogDebug("Debug level - development info")
+SLogNet("Network payload with \\u6253\\u5370 unicode support")
+SLogInfo("Info level - important information")
+SLogWarning("Warning level - potential issues")
+SLogError("Error level - errors occurred")
+SLogFault("Fault level - critical/fatal errors")
+```
+
+### Class Methods
+
+```swift
+SLog.trace("Trace message")
+SLog.debug("Debug message")
+SLog.net("Network message")
+SLog.info("Info message")
+SLog.warning("Warning message")
+SLog.error("Error message")
+SLog.fault("Fault message")
+```
+
+## Output Format
 
 ```
 🌐 Network 🌐 | 2021-03-05 15:27:33:609 
@@ -159,11 +149,10 @@ public enum LogDegree : Int{
  debug 
 
 <<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>
-
 ```
 
 ```
-⚪ Verbose ⚪ | 2021-03-05 15:36:57:505 
+⚪ Trace ⚪ | 2021-03-05 15:36:57:505 
  所在类:ViewController.swift 
  方法名:viewDidLoad() 
  所在行:25 
@@ -174,30 +163,44 @@ public enum LogDegree : Int{
 <<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>
 ```
 
-详细用法参见Demo **ViewController**
+## AI Skills Integration
 
-## 更多砖块工具加速APP开发
+SwiftLog provides an AI Skills file for seamless integration with AI coding assistants. See [Skills Usage Guide](#skills-usage-guide) below.
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftBrick&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftBrick)
+### Skills Usage Guide
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftMediator&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftMediator)
+The `.skills` file contains structured metadata about SwiftLog's API, enabling AI assistants to:
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftShow&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftShow)
+1. **Auto-suggest correct log functions** - AI knows to use `SLogTrace/SLogDebug/SLogNet/SLogInfo/SLogWarning/SLogError/SLogFault` instead of generic `print()`
+2. **Apply proper configuration** - AI understands `defaultLogDegree`, `showNetLog`, `maxLogAge`, and `addFileLog` settings
+3. **Generate context-aware log messages** - AI includes file, function, and line info automatically
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftyForm&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftyForm)
+#### Example AI Prompts
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftEmptyData&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftEmptyData)
+When working on a Swift project with SwiftLog installed, you can prompt your AI assistant:
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftPageView&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftPageView)
+```
+Use SwiftLog to add error handling logs in this function
+```
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=JHTabBarController&theme=radical&locale=cn)](https://github.com/jackiehu/JHTabBarController)
+The AI will automatically generate:
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftMesh&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftMesh)
+```swift
+SLogError("Failed to fetch user data: \(error.localizedDescription)")
+```
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftNotification&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftNotification)
+Or for network debugging:
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftNetSwitch&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftNetSwitch)
+```
+Add network logging to track this API request
+```
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftButton&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftButton)
+The AI will generate:
 
-[![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftDatePicker&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftDatePicker)
+```swift
+SLogNet("API Request: \(url) | Method: \(method) | Body: \(body)")
+```
+
+#### Installing Skills
+
+Place the `SwiftLog.skills` file in your project's `.opencode/skills/` directory or your global AI assistant skills folder.
